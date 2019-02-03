@@ -7,7 +7,6 @@ from decimal import Decimal
 
 def extend(parameter, outname = 'POSCAR_Extend'):
 	outputpath = str(os.getcwd())+"/"+str(outname)
-
 	Na = int(parameter[0])
 	Nb = int(parameter[1])
 	Nc = int(parameter[2])
@@ -15,6 +14,9 @@ def extend(parameter, outname = 'POSCAR_Extend'):
 	x = []
 	y = []
 	z = []
+	gridx = []
+	gridy = []
+	gridz = []
 	poscar = open(str(os.getcwd())+"/POSCAR").readlines()
 	rows = poscar[6].split()
 
@@ -46,8 +48,19 @@ def extend(parameter, outname = 'POSCAR_Extend'):
 	print (newindex)
 	
 	fout = open(outputpath,'w')
-	for i in range (6):
+	for i in range (2):
 		fout.writelines(poscar[i])
+	for i in range (3):
+		gridx.append(poscar[i+2].split()[0])
+		gridy.append(poscar[i+2].split()[1])
+		gridz.append(poscar[i+2].split()[2])
+	line3 = ' '
+	for i in range(3):
+		for strn in [Decimal(gridx[i])*Na,Decimal(gridy[i])*Nb,Decimal(gridz[i])*Nc]:
+			line3 += '{0:>22.16f}'.format(strn)
+		line3 += '\n '
+	fout.writelines(line3[:-1])
+	fout.writelines(poscar[5])
 	fout.writelines(line7)
 	fout.writelines('Direct\n')
 	for i in range(len(newx)):
